@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+body{
+  background-color: #E5E1DA;
+  font-family: Poppins;
+}
+
+button.primary{
+  @apply text-white py-2 px-4 bg-primary cursor-pointer ring-1 ring-primary rounded font-bold hover:bg-white hover:shadow-lg duration-75 hover:ring-primarydark hover:text-primary;
+}
+button.secondary{
+  @apply flex items-center gap-2 text-primary py-2 px-4 bg-primarylight cursor-pointer ring-1 font-bold ring-primarylight rounded  hover:bg-primarydark hover:shadow-lg duration-75 hover:ring-primarydark hover:text-white;
+}
+div.input{
+  @apply flex bg-background rounded w-full py-2.5 px-4 gap-4 items-center ;
+}
+input.input-et{
+  @apply text-base bg-inherit text-black outline-none w-full;
+}
+
+.custom-list {
+  list-style-type: none;
+  padding-left: 2.0em; 
+}
+
+.custom-list li:before {
+  content: "•"; 
+  font-size: 17px;
+  position: absolute;
+  margin-left: -1.5em; 
+}
+
+.truncate-text {
+  display: -webkit-box;
+  -webkit-line-clamp:3 ; 
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-card-image-container {
+  width: 100%; /* Ensures the container scales to fit its parent */
+  height: 200px; /* Fixed height for all image containers */
+  overflow: hidden; /* Prevents images from overflowing the container */
+  border-radius: 8px; /* Optional: Adds rounded corners for consistency */
+}
+
+.event-image {
+  width: 100%; /* Makes the image responsive to the container's width */
+  height: 100%; /* Ensures the image completely fills the container's height */
+  object-fit: cover; /* Maintains the aspect ratio and crops excess parts */
+}
