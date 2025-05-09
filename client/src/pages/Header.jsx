@@ -2,7 +2,6 @@ import { useContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { UserContext } from "../UserContext";
-import { RxExit } from "react-icons/rx";
 import { BsFillCaretDownFill } from "react-icons/bs";
 
 export default function Header() {

@@ -2,13 +2,18 @@
 import { Link, Navigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
+import logo from '../assets/EventHubLogo12.png';
+import signupImage from '../assets/signuppic.svg';
+
 
 export default function RegisterPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [redirect, setRedirect] = useState('');
+  const [redirect, setRedirect] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   
 
   async function registerUser(ev){
@@ -18,7 +23,11 @@ export default function RegisterPage() {
       alert('Passwords do not match');
       return;
     }
-
+    if (!name || !email || !password || !confirmPassword) {
+      alert('Please fill in all fields');
+      return;
+    }    
+    setLoading(true);
     try{
       await axios.post('/register', {
         name,
@@ -28,10 +37,18 @@ export default function RegisterPage() {
       });
       alert('Registration Successful')
       setRedirect(true)
-    }catch(e){
-      alert('Registration failed')
     }
-  }
+      catch(e){
+        if (e.response && e.response.data && e.response.data.message) {
+          alert(e.response.data.message);
+        } else {
+          alert('Registration failed. Please try again.');
+        }
+      }
+      finally {
+        setLoading(false);
+      }
+        }
 
   if (redirect){
     return <Navigate to={'/login'} />
@@ -45,12 +62,13 @@ export default function RegisterPage() {
         <div className="text-3xl font-black">Welcome to</div>
 
           <div>
-            <img src="../src/assets/EventHubLogo12.png" alt="" className="w-48"/>
+          <img src={logo} alt="Logo" className="w-48" />
           </div>  
         </div>
 
         <div className="ml-48 w-80 mt-6">
-        <img src="../src/assets/signuppic.svg" alt="" className='w-full'/>
+        <img src={signupImage} alt="Signup Illustration" className="w-full" />
+        
         </div>   
       
     </div>
@@ -96,14 +114,18 @@ export default function RegisterPage() {
 
             
             <div className="w-full py-4">
-              <button type="submit" className="primary w-full"> Create Account </button>
+             <button type="submit" className="primary w-full" disabled={loading}>
+                {loading ? 'Registering...' : 'Create Account'}
+             </button>
             </div>
+
 
             <div className="container2">
               <div className="w-full h-full p-1">
-                <Link to={'/login'}>
-                  <button type="submit" className="text-black cursor-pointer rounded w-full h-full font-bold" > Sign In</button>
-                </Link>
+              <Link to="/login" className="text-black font-bold rounded w-full h-full flex items-center justify-center border border-gray-300 p-2">
+               Sign In
+              </Link>
+
               </div>
               <div className="w-full h-full p-1">
                 <Link to={'/register'}>
