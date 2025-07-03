@@ -10,6 +10,7 @@ const multer = require("multer");
 const path = require("path");
 
 const Ticket = require("./models/Ticket");
+const Event = require("./models/Event");
 
 const app = express();
 
@@ -51,7 +52,7 @@ app.post("/register", async (req, res) => {
       const userDoc = await UserModel.create({
          name,
          email,
-         password: bcrypt.hashSync(password, bcryptSalt),
+         password,
       });
       res.json(userDoc);
    } catch (e) {
@@ -65,8 +66,8 @@ app.delete('/event/:id', async (req, res) => {
      await Event.findByIdAndDelete(eventId); // Replace with your database query
      res.status(200).json({ message: "Event deleted successfully" });
    } catch (error) {
-     res.status(500).json({ error: "Failed to delete event" });
-   }
+     res.status(500).json({ error: "Failed to delete event" });
+   }
  });
 
  app.delete('/tickets/:ticketId', async (req, res) => {
@@ -91,13 +92,16 @@ app.delete('/event/:id', async (req, res) => {
 app.post("/login", async (req, res) => {
    const { email, password } = req.body;
 
-   const userDoc = await UserModel.findOne({ email });
+   const userDoc = await UserModel.findOne({ email }).select('+password');
 
    if (!userDoc) {
       return res.status(404).json({ error: "User not found" });
    }
 
-   const passOk = bcrypt.compareSync(password, userDoc.password);
+   if (!userDoc.password) {
+      return res.status(500).json({ error: "User has no password set" });
+   }
+   const passOk = await bcrypt.compare(password, userDoc.password);
    if (!passOk) {
       return res.status(401).json({ error: "Invalid password" });
    }
@@ -134,26 +138,6 @@ app.get("/profile", (req, res) => {
 app.post("/logout", (req, res) => {
    res.cookie("token", "").json(true);
 });
-
-const eventSchema = new mongoose.Schema({
-   owner: String,
-   title: String,
-   description: String,
-   organizedBy: String,
-   eventDate: Date,
-   eventTime: String,
-   location: String,
-   Participants: Number,
-   Count: Number,
-   Income: Number,
-   ticketPrice: Number,
-   Quantity: Number,
-   image: String,
-   likes: Number,
-   Comment: [String],
-});
-
-const Event = mongoose.model("Event", eventSchema);
 
 app.post("/createEvent", upload.single("image"), async (req, res) => {
    try {
@@ -294,3 +278,11 @@ const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
    console.log(`Server is running on port ${PORT}`);
 });
+
+const eventsRouter = require('./routes/events');
+const usersRouter = require('./routes/users');
+const ticketsRouter = require('./routes/tickets');
+
+app.use('/api/events', eventsRouter);
+app.use('/api/users', usersRouter);
+app.use('/api/tickets', ticketsRouter);
